@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Cadastrar Paciente</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    </head>
+    <body>
+        <div class="container mt-5 col-md-6">
+            <h2 class="mb-3">Cadastro de Pacientes</h2>
+            <form id="formulario" th:action="@{/pacientes/cadastro}" th:object="${PacienteCadastroDTO}">
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome Completo</label>
+                    <input type="text" th:field="{nome}" name="nome" class="form-control" id="nome" placeholder="João Silva">
+                </div>
+                <div class="mb-3">
+                    <label for="cpf" class="form-label">CPF</label>
+                    <input type="text" th:field="{cpf}" name="cpf" class="form-control" id="cpf" maxlength="14" placeholder="000.000.000-00" aria-describedby="cpfHelp">
+                    <div id="cpfHelp" class="form-text">Digite apenas os digitos do CPF.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="dataNasc" class="form-label">Data de Nascimento</label>
+                    <input type="date" th:field="{dataNasc}" name="dataNasc" class="form-control" id="dataNasc">
+                </div>
+                <button type="submit" class="btn btn-primary">Cadastrar Paciente</button>
+            </form>
+        </div>
+
+    </body>
+    <script>
+        const cpf = document.getElementById("cpf");
+        cpf.addEventListener('keypress', () => {
+            let cpfLength = cpf.value.length
+
+            if (cpfLength === 3 || cpfLength === 7) {
+                cpf.value += '.'
+            }else if (cpfLength === 11) {
+                cpf.value += '-'
+            }
+
+        });
+
+        document.getElementById('formulario').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var formData = {
+                nome: document.getElementById('nome').value,
+                cpf: document.getElementById('cpf').value,
+                dataNasc: document.getElementById('dataNasc').value
+            };
+
+            fetch('http://localhost:8080/pacientes/cadastro', {
+                method: 'POST',
+                body: JSON.stringify(formData),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro na solicitação AJAX');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Resposta da API:', data);
+                    // Pode adicionar mais ações aqui, como mostrar uma mensagem de sucesso para o usuário
+                })
+                .catch(error => {
+                    console.error('Erro na solicitação AJAX:', error);
+                    // Pode adicionar mais ações aqui, como mostrar uma mensagem de erro para o usuário
+                });
+        });
+
+    </script>
+</html>

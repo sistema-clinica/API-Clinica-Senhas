@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Hello WebSocket</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+</head>
+<body onload="connect()">
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+    enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+<div id="main-content" class="container">
+    <div class="d-flex justify-content-center text-center mt-5">
+        <div>
+            <div>
+                <h2>Chamar paciente para triagem</h2>
+            </div>
+            <form class="row row-cols-lg-auto g-3 align-items-center">
+                <div class="col-12">
+                    <div class="input-group">
+                        <input id="name" type="text" class="text-center form-control" placeholder="Digite a sala aqui">
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <button id="send" type="submit" class="btn btn-primary">Chamar paciente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    const stompClient = new StompJs.Client({
+        brokerURL: 'ws://localhost:8080/websocket'
+    });
+
+    stompClient.onConnect = (frame) => {
+        console.log('Connected: ' + frame);
+    };
+
+    stompClient.onWebSocketError = (error) => {
+        console.error('Error with websocket', error);
+    };
+
+    stompClient.onStompError = (frame) => {
+        console.error('Broker reported error: ' + frame.headers['message']);
+        console.error('Additional details: ' + frame.body);
+    };
+
+    function connect() {
+        stompClient.activate();
+    }
+
+    function sendName() {
+        stompClient.publish({
+            destination: "/senha/espera",
+            body: JSON.stringify({'localDeAtendimento': $("#name").val()})
+        });
+    }
+
+    $(function () {
+        $("form").on('submit', (e) => e.preventDefault());
+        $( "#send" ).click(() => sendName());
+    });
+</script>
+</html>
