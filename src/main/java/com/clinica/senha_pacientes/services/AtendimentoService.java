@@ -13,10 +13,6 @@ public class AtendimentoService {
 
     @Autowired
     private AtendimentoRepository repository;
-    private int countPacientesUrgentes = 0;
-    private int countPacientesPreferenciais = 0;
-    private final int maxCountPacientesUrgentes = 3;
-    private final int maxCountPacientesPreferenciais = 2;
 
     public void addPacienteFila(Paciente paciente) {
         repository.addSenhaHistorico(paciente);
@@ -32,65 +28,63 @@ public class AtendimentoService {
     }
 
     public Paciente dequeuePaciente() {
-        if (countPacientesPreferenciais < maxCountPacientesPreferenciais && !repository.isFilaPreferencialVazia()) {
-            countPacientesPreferenciais++;
-            Paciente paciente = repository.dequeuePacienteFilaPreferencial();
+        Queue<Paciente> filaAtendiemnto = this.listarFilaAtendimento();
 
-            repository.addSenhaHistorico(paciente);
-            paciente.foiAtendido();
+        if (!filaAtendiemnto.isEmpty()) {
+            Paciente paciente = filaAtendiemnto.poll();
 
-            return paciente;
-        } else if (countPacientesUrgentes < maxCountPacientesUrgentes && !repository.isFilaUrgenteVazia()) {
-            countPacientesPreferenciais = 0;
-            countPacientesUrgentes++;
-            Paciente paciente = repository.dequeuePacienteFilaUrgente();
-
-            repository.addSenhaHistorico(paciente);
-            paciente.foiAtendido();
-
-            return paciente;
-        } else if (!repository.isFilaNormalVazia()) {
-            countPacientesPreferenciais = 0;
-            countPacientesUrgentes = 0;
-            Paciente paciente = repository.dequeuePacienteFilaNormal();
-
-            repository.addSenhaHistorico(paciente);
-            paciente.foiAtendido();
-
+            switch (paciente.getUrgencia()) {
+                case NORMAL -> repository.dequeuePacienteFilaNormal();
+                case URGENTE -> repository.dequeuePacienteFilaUrgente();
+                case PREFERENCIAL -> repository.dequeuePacienteFilaPreferencial();
+            }
             return paciente;
         }
-        throw new RuntimeException("Não existem pacientes na fila de atendimento");
+
+        throw new RuntimeException("Não Existem Pacientes na fila de atendimento");
     }
 
 
     public Queue<Paciente> listarFilaAtendimento() {
-        Queue<Paciente> filaUrgenteCopy = new LinkedList<>(repository.getFilaUrgentePaciente());
-        Queue<Paciente> filaNormalCopy = new LinkedList<>(repository.getFilaNormalPaciente());
-        Queue<Paciente> filaPreferencialCopy = new LinkedList<>(repository.getFilaPreferencialPaciente());
+        Queue<Paciente> filaUrgente = repository.getFilaUrgentePaciente();
+        Queue<Paciente> filaNormal = repository.getFilaNormalPaciente();
+        Queue<Paciente> filaPreferencial = repository.getFilaPreferencialPaciente();
         Queue<Paciente> filaFinal = new LinkedList<>();
-        int copyCountPacientesUrgentes = countPacientesUrgentes;
-        int copyCountPacientesPreferenciais = countPacientesPreferenciais;
 
-        while (!filaPreferencialCopy.isEmpty()) {
-            filaFinal.add(filaPreferencialCopy.poll());
-            copyCountPacientesPreferenciais++;
-            if (copyCountPacientesPreferenciais == maxCountPacientesPreferenciais && !filaNormalCopy.isEmpty()) {
-                filaFinal.add(filaNormalCopy.poll());
-                copyCountPacientesPreferenciais = 0;
+        int countUrgentes = 0;
+        int countPreferenciais = 0;
+
+        // A cada 2 pacientes urgentes atendidos, 1 paciente preferencial deve ser atendido.
+        // A cada 2 pacientes preferenciais atendidos ou 3 pacientes urgentes atendidos, 1 paciente normal deve ser atendido.
+
+        while (!filaUrgente.isEmpty()) {
+            filaFinal.add(filaUrgente.poll());
+            countUrgentes++;
+
+            if (countUrgentes == 2 && !filaPreferencial.isEmpty()) {
+                filaFinal.add(filaPreferencial.poll());
+                countPreferenciais++;
+            }
+
+            if (countUrgentes == 3 && !filaNormal.isEmpty()) {
+                filaFinal.add(filaNormal.poll());
+                countUrgentes = 0;
             }
         }
 
-        while (!filaUrgenteCopy.isEmpty()) {
-            filaFinal.add(filaUrgenteCopy.poll());
-            copyCountPacientesUrgentes++;
-            if (copyCountPacientesUrgentes == maxCountPacientesUrgentes && !filaNormalCopy.isEmpty()) {
-                filaFinal.add(filaNormalCopy.poll());
-                copyCountPacientesUrgentes = 0;
+        while (!filaPreferencial.isEmpty()) {
+
+            if (countPreferenciais == 2 && !filaNormal.isEmpty()) {
+                filaFinal.add(filaNormal.poll());
+                countPreferenciais = 0;
             }
+
+            filaFinal.add(filaPreferencial.poll());
+            countPreferenciais++;
         }
 
-        while (!filaNormalCopy.isEmpty()) {
-            filaFinal.add(filaNormalCopy.poll());
+        while (!filaNormal.isEmpty()) {
+            filaFinal.add(filaNormal.poll());
         }
 
         return filaFinal;
