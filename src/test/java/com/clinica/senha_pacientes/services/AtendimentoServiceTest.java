@@ -2,8 +2,6 @@ package com.clinica.senha_pacientes.services;
 
 import com.clinica.senha_pacientes.DTOs.PacienteCadastroDTO;
 import com.clinica.senha_pacientes.enitites.Paciente;
-import com.clinica.senha_pacientes.enitites.Status;
-import com.clinica.senha_pacientes.enitites.Urgencia;
 import com.clinica.senha_pacientes.repositories.AtendimentoRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

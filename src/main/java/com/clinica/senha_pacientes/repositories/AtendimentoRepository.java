@@ -4,7 +4,6 @@ import com.clinica.senha_pacientes.enitites.Paciente;
 import com.clinica.senha_pacientes.enitites.filas.*;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
