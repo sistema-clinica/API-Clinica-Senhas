@@ -2,7 +2,6 @@ package com.clinica.senha_pacientes.services;
 
 import com.clinica.senha_pacientes.DTOs.AutenticacaoDTO;
 import com.clinica.senha_pacientes.enitites.Admin;
-import com.clinica.senha_pacientes.infra.exceptions.ValidacaoException;
 import com.clinica.senha_pacientes.repositories.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,10 +28,10 @@ public class AutenticacaoService implements UserDetailsService {
         var encodedPassword = passwordEncoder.encode(dto.senha());
 
         if (adminRepository.existsByUsername(dto.username())) {
-            throw new ValidacaoException("Username já cadastrado no sistema!");
+            throw new RuntimeException("Username já cadastrado no sistema!");
         }
 
-        var admin = new Admin(dto.username(), encodedPassword);
+        Admin admin = new Admin(dto.username(), encodedPassword);
         adminRepository.save(admin);
     }
 }

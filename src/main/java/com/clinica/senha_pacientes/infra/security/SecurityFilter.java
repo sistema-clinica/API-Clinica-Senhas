@@ -1,5 +1,6 @@
 package com.clinica.senha_pacientes.infra.security;
 
+import com.clinica.senha_pacientes.enitites.Admin;
 import com.clinica.senha_pacientes.repositories.AdminRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,12 +25,12 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        var token = getToken(request);
+        String token = getToken(request);
         if (token != null) {
-            var username = tokenService.getSubjectToken(token);
-            var admin = adminRepository.findByUsername(username);
+            String username = tokenService.getSubjectToken(token);
+            Admin admin = adminRepository.findByUsername(username);
 
-            var autentication = new UsernamePasswordAuthenticationToken(admin, null, admin.getAuthorities());
+            UsernamePasswordAuthenticationToken autentication = new UsernamePasswordAuthenticationToken(admin, null, admin.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(autentication);
         }
 
@@ -37,7 +38,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     }
 
     private String getToken(HttpServletRequest request) {
-        var token = request.getHeader("Authorization");
+        String token = request.getHeader("Authorization");
         if (token != null) {
             return token.replace("Bearer ", "").trim();
         }
