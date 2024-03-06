@@ -67,12 +67,8 @@ public class AtendimentoController {
     @GetMapping("/fila/espera")
     @Operation(summary = "Listagem de todos os paciente na fila de triagem")
     public ResponseEntity<List<ListagemPacienteDTO>> listarPacientesEspera() {
-
         List<ListagemPacienteDTO> list = atendimentoService.listarFilaEspera().stream().map(ListagemPacienteDTO::new).toList();
-        if (!list.isEmpty()) {
-            return ResponseEntity.ok(list);
-        }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(list);
     }
 
     @PostMapping("/triagem")
@@ -84,7 +80,7 @@ public class AtendimentoController {
         paciente.setTriagem(pacienteTriagemDTO);
 
         atendimentoService.addPacienteFila(paciente);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Triagem realizada com sucesso!");
     }
 
     @GetMapping("/triagem")

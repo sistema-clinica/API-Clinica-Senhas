@@ -14,6 +14,7 @@ public class AtendimentoService {
     @Autowired
     private AtendimentoRepository repository;
 
+
     public void addPacienteFila(Paciente paciente) {
         repository.addSenhaHistorico(paciente);
         switch (paciente.getUrgencia()) {
@@ -38,6 +39,7 @@ public class AtendimentoService {
                 case URGENTE -> repository.dequeuePacienteFilaUrgente();
                 case PREFERENCIAL -> repository.dequeuePacienteFilaPreferencial();
             }
+            repository.addSenhaHistorico(paciente);
             return paciente;
         }
 
@@ -56,7 +58,6 @@ public class AtendimentoService {
 
         // A cada 2 pacientes urgentes atendidos, 1 paciente preferencial deve ser atendido.
         // A cada 2 pacientes preferenciais atendidos ou 3 pacientes urgentes atendidos, 1 paciente normal deve ser atendido.
-
         while (!filaUrgente.isEmpty()) {
             filaFinal.add(filaUrgente.poll());
             countUrgentes++;
