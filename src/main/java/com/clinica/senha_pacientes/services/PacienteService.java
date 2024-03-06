@@ -15,22 +15,25 @@ public class PacienteService {
     @Autowired
     private PacienteRepository pacienteRepository;
 
-    private int ultimoNumeroSenha = 0;
-
     public Paciente salvarPaciente(Paciente paciente) {
         paciente.setSenha(gerarSenhaUnica());
         return pacienteRepository.save(paciente);
+    }
+
+    private String gerarSenhaUnica() {
+        String senhaStr = "00001";
+        String ultimaSenha = findUltimaSenhaCriada();
+        if (ultimaSenha != null) {
+            int valorUltimaSenha = Integer.valueOf(ultimaSenha);
+            senhaStr = String.format("%05d", valorUltimaSenha + 1);
+        }
+        return senhaStr;
     }
 
     public List<ListagemPacienteDTO> listarPacientes() {
         return pacienteRepository.findAll().stream().map(ListagemPacienteDTO::new).toList();
     }
 
-    private String gerarSenhaUnica() {
-        ultimoNumeroSenha++;
-        String senhaStr = String.format("%05d", ultimoNumeroSenha);
-        return senhaStr;
-    }
 
     public Paciente atualizarPaciente(Paciente paciente) {
         return pacienteRepository.save(paciente);
@@ -48,8 +51,12 @@ public class PacienteService {
         pacienteRepository.deleteById(id);
     }
 
+    private String findUltimaSenhaCriada() {
+        return pacienteRepository.buscarUltimaSenhaCriada();
+    }
+
     public List<ListagemPacienteDTO> listarPacientesEmTriagem() {
-        var pacientes = pacienteRepository.findPacientesByStatus(Status.EM_TRIAGEM);
+        List<Paciente> pacientes = pacienteRepository.findPacientesByStatus(Status.EM_TRIAGEM);
         return pacientes.stream().map(ListagemPacienteDTO::new).toList();
     }
 }
