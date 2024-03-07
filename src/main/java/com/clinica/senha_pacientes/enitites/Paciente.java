@@ -46,7 +46,7 @@ public class Paciente {
             this.detalheSintomas = pacienteTriagemDTO.detalheSintomas();
         }
         else {
-            throw new RuntimeException("Paciente ainda não foi chamado para Triagem");
+            throw new RuntimeException("Paciente não está em Triagem");
         }
     }
 
@@ -75,14 +75,5 @@ public class Paciente {
 
     public void emTriagem() {
         this.status = Status.EM_TRIAGEM;
-    }
-
-    @Override
-    public String toString() {
-        return "Paciente{" +
-                "id=" + id +
-                ", name='" + nome + '\'' +
-                ", status=" + status +
-                '}';
     }
 }

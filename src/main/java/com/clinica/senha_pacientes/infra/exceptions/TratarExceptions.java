@@ -9,6 +9,9 @@ public class TratarExceptions {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity tratarExcecao500(RuntimeException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+        return ResponseEntity.badRequest().body(new ErroMessage(ex.getMessage()));
     }
+
+    private record ErroMessage(String message) {}
+
 }

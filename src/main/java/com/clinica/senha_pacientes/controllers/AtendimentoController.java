@@ -23,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("atendimento")
 @SecurityRequirement(name = "bearer-key")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AtendimentoController {
 
     @Autowired
@@ -31,7 +32,7 @@ public class AtendimentoController {
     @Autowired
     private PacienteService pacienteService;
 
-    @GetMapping
+    @PostMapping
     @Operation(summary = "Chamar paciente para atendimento",
             description = "Chama o paciente no topo da lista de atendimento e o coloca como status de finalizado atendimento.")
     public ResponseEntity<ChamadaDTO> getPacienteAtendimento(@RequestBody @Valid LocalChamadaDTO localChamadaDTO) {
@@ -42,7 +43,7 @@ public class AtendimentoController {
         return ResponseEntity.ok(new ChamadaDTO(paciente));
     }
 
-    @GetMapping("/espera")
+    @PostMapping("/espera")
     @MessageMapping("/espera")
     @SendTo("/painel/espera")
     @Operation(summary = "Chamar paciente para triagem",

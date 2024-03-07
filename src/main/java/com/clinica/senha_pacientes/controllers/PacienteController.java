@@ -20,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/pacientes")
 @SecurityRequirement(name = "bearer-key")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PacienteController {
 
     @Autowired
