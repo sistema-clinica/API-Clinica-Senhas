@@ -1,106 +1,96 @@
 package com.clinica.senha_pacientes.repositories;
 
+import com.clinica.senha_pacientes.enitites.ItemPacienteFila;
 import com.clinica.senha_pacientes.enitites.Paciente;
-import com.clinica.senha_pacientes.enitites.filas.*;
+import com.clinica.senha_pacientes.enitites.TipoFila;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
-import java.util.Stack;
-import java.util.stream.Collectors;
 
 @Getter
 @Repository
 public class AtendimentoRepository {
 
     @Autowired
-    private FilaEsperaRepository filaEsperaRepository;
-
-    @Autowired
-    private FilaPreferencialRepository filaPreferencialRepository;
-
-    @Autowired
-    private FilaNormalRepository filaNormalRepository;
-
-    @Autowired
-    private FilaUrgenteRepository filaUrgenteRepository;
-
-    @Autowired
-    private HistorcoSenhasRepository historcoSenhasRepository;
+    private ItemPacienteFilaRepository itemPacienteFilaRepository;
 
     public Queue<Paciente> getFilaUrgentePaciente() {
-        return new LinkedList<>(filaUrgenteRepository.findAll().stream().map(ItemPacienteFila::getPaciente).toList());
+        return new LinkedList<>(itemPacienteFilaRepository.findAllByTipoFilaOrderByDataDeAdicao(TipoFila.URGENTE).stream().map(ItemPacienteFila::getPaciente).toList());
     }
 
     public Queue<Paciente> getFilaNormalPaciente() {
-        return new LinkedList<>(filaNormalRepository.findAll().stream().map(ItemPacienteFila::getPaciente).toList());
+        return new LinkedList<>(itemPacienteFilaRepository.findAllByTipoFilaOrderByDataDeAdicao(TipoFila.NORMAL).stream().map(ItemPacienteFila::getPaciente).toList());
+
     }
 
     public Queue<Paciente> getFilaPreferencialPaciente() {
-        return new LinkedList<>(filaPreferencialRepository.findAll().stream().map(ItemPacienteFila::getPaciente).toList());
+        return new LinkedList<>(itemPacienteFilaRepository.findAllByTipoFilaOrderByDataDeAdicao(TipoFila.PREFERENCIAL).stream().map(ItemPacienteFila::getPaciente).toList());
+
     }
 
 
     public Queue<Paciente> getFilaEsperaPaciente() {
-        return new LinkedList<>(filaEsperaRepository.findAll().stream().map(ItemPacienteFila::getPaciente).toList());
+        return new LinkedList<>(itemPacienteFilaRepository.findAllByTipoFilaOrderByDataDeAdicao(TipoFila.ESPERA).stream().map(ItemPacienteFila::getPaciente).toList());
+
     }
 
 
-    public Stack<Paciente> getHistoricoSenhasChamadas() {
-        return historcoSenhasRepository.findAll().stream().map(ItemPacienteFila::getPaciente).collect(Collectors.toCollection(Stack::new));
+    public List<Paciente> getHistoricoSenhasChamadas() {
+        return itemPacienteFilaRepository.getHistorico().stream().map(ItemPacienteFila::getPaciente).toList();
+
     }
 
     public void addSenhaHistorico(Paciente paciente) {
-        historcoSenhasRepository.save(new HistoricoSenhasChamadas(paciente));
+        itemPacienteFilaRepository.save(new ItemPacienteFila(paciente, TipoFila.HISTORICO));
     }
     public void addPacienteFilaNormal(Paciente paciente) {
-        filaNormalRepository.save(new PacienteFilaNormal(paciente));
+        itemPacienteFilaRepository.save(new ItemPacienteFila(paciente,TipoFila.NORMAL));
     }
 
     public void addPacienteFilaUrgente(Paciente paciente) {
-        filaUrgenteRepository.save(new PacienteFilaUrgente(paciente));
+        itemPacienteFilaRepository.save(new ItemPacienteFila(paciente,TipoFila.URGENTE));
     }
     public void addPacienteFilaPreferencial(Paciente paciente) {
-        filaPreferencialRepository.save(new PacienteFilaPreferencial(paciente));
+        itemPacienteFilaRepository.save(new ItemPacienteFila(paciente,TipoFila.PREFERENCIAL));
     }
 
     public void addPacienteFilaEspera(Paciente paciente) {
-        PacienteFilaEspera pacienteEspera = new PacienteFilaEspera(paciente);
-        System.out.println(pacienteEspera.getDataDeAdicao());
-        filaEsperaRepository.save(new PacienteFilaEspera(paciente));
+        itemPacienteFilaRepository.save(new ItemPacienteFila(paciente,TipoFila.ESPERA));
     }
 
     @Transactional
     public Paciente dequeuePacienteFilaNormal() {
-        Paciente paciente = filaNormalRepository.findFirstPacienteByDataDeAdicao();
-        filaNormalRepository.deleteByPaciente(paciente);
+        var paciente = itemPacienteFilaRepository.findFirstPacienteByTipoFila(TipoFila.NORMAL);
+        itemPacienteFilaRepository.deleteByPaciente(paciente);
         return paciente;
     }
 
     @Transactional
     public Paciente dequeuePacienteFilaUrgente() {
-        Paciente paciente = filaUrgenteRepository.findFirstPacienteByDataDeAdicao();
-        filaUrgenteRepository.deleteByPaciente(paciente);
+        var paciente = itemPacienteFilaRepository.findFirstPacienteByTipoFila(TipoFila.URGENTE);
+        itemPacienteFilaRepository.deleteByPaciente(paciente);
         return paciente;
 
     }
     @Transactional
     public Paciente dequeuePacienteFilaPreferencial() {
-        Paciente paciente = filaPreferencialRepository.findFirstPacienteByDataDeAdicao();
-        filaPreferencialRepository.deleteByPaciente(paciente);
+        var paciente = itemPacienteFilaRepository.findFirstPacienteByTipoFila(TipoFila.PREFERENCIAL);
+        itemPacienteFilaRepository.deleteByPaciente(paciente);
         return paciente;
     }
     @Transactional
     public Paciente dequeuePacienteFilaEspera() {
-        Paciente paciente = filaEsperaRepository.findFirstPacienteByDataDeAdicao();
-        filaEsperaRepository.deleteByPaciente(paciente);
+        var paciente = itemPacienteFilaRepository.findFirstPacienteByTipoFila(TipoFila.ESPERA);
+        itemPacienteFilaRepository.deleteByPaciente(paciente);
         return paciente;
     }
 
     public boolean isFilaEsperaVazia() {
-        return filaEsperaRepository.findAll().isEmpty();
+        return itemPacienteFilaRepository.findAllByTipoFilaOrderByDataDeAdicao(TipoFila.ESPERA).isEmpty();
     }
 }

@@ -1,6 +1,5 @@
-package com.clinica.senha_pacientes.enitites.filas;
+package com.clinica.senha_pacientes.enitites;
 
-import com.clinica.senha_pacientes.enitites.Paciente;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,8 +11,9 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@MappedSuperclass
-public abstract class ItemPacienteFila {
+@Entity
+@Table(name = "item_paciente_fila")
+public class ItemPacienteFila {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,9 +21,18 @@ public abstract class ItemPacienteFila {
     @ManyToOne
     private Paciente paciente;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_fila")
+    private TipoFila tipoFila;
+
     @Column(name = "data_de_adicao")
-    @JoinColumn(name = "paciente_id")
     private LocalDateTime dataDeAdicao;
+
+    public ItemPacienteFila(Paciente paciente, TipoFila tipoFila) {
+        this.paciente = paciente;
+        this.tipoFila = tipoFila;
+        this.dataDeAdicao = LocalDateTime.now();
+    }
 
     public ItemPacienteFila(Paciente paciente) {
         this.paciente = paciente;

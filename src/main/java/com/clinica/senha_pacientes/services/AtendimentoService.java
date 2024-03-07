@@ -6,7 +6,9 @@ import com.clinica.senha_pacientes.repositories.AtendimentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 @Service
 public class AtendimentoService {
@@ -108,16 +110,12 @@ public class AtendimentoService {
     }
 
     public List<Paciente> getHistoricoSenhasChamadas(int numero_limit) {
-        Stack<Paciente> senhasChamadas = repository.getHistoricoSenhasChamadas();
-        List<Paciente> listaRetorno = new ArrayList<>();
-        for (int i = senhasChamadas.size() - 1; i >= 0; i--) {
-            listaRetorno.add(senhasChamadas.get(i));
-        }
-        return listaRetorno.stream().limit(numero_limit).toList();
+        List<Paciente> senhasChamadas = repository.getHistoricoSenhasChamadas();
+        return senhasChamadas.stream().limit(numero_limit).toList();
     }
 
     public Paciente getUltimaSenhaChamada() {
-        return repository.getHistoricoSenhasChamadas().peek();
+        return repository.getHistoricoSenhasChamadas().get(0);
     }
 
     public List<Paciente> getPacientesByUrgencia(Urgencia urgencia) {
