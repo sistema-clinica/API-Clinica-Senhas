@@ -5,6 +5,7 @@ import com.clinica.senha_pacientes.enitites.Paciente;
 import com.clinica.senha_pacientes.enitites.TipoFila;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,8 +41,7 @@ public class AtendimentoRepository {
 
 
     public List<Paciente> getHistoricoSenhasChamadas() {
-        return itemPacienteFilaRepository.getHistorico().stream().map(ItemPacienteFila::getPaciente).toList();
-
+        return itemPacienteFilaRepository.getHistorico(Limit.of(7)).stream().map(ItemPacienteFila::getPaciente).toList();
     }
 
     public void addSenhaHistorico(Paciente paciente) {

@@ -112,13 +112,16 @@ public class AtendimentoService {
     public List<Paciente> getHistoricoSenhasChamadas() {
         List<Paciente> senhasChamadas = repository.getHistoricoSenhasChamadas();
         if (!senhasChamadas.isEmpty()) {
-            return senhasChamadas.stream().limit(6).toList();
+            return senhasChamadas.subList(1, senhasChamadas.size());
         }
         throw new RuntimeException("Não existem pacientes anteriores");
     }
 
     public Paciente getUltimaSenhaChamada() {
-        return repository.getHistoricoSenhasChamadas().get(0);
+        if (!getHistoricoSenhasChamadas().isEmpty()) {
+            return repository.getHistoricoSenhasChamadas().get(0);
+        }
+        throw new RuntimeException("Não existem pacientes anteriores");
     }
 
     public List<Paciente> getPacientesByUrgencia(Urgencia urgencia) {

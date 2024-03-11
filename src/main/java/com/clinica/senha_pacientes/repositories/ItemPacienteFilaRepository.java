@@ -3,6 +3,7 @@ package com.clinica.senha_pacientes.repositories;
 import com.clinica.senha_pacientes.enitites.ItemPacienteFila;
 import com.clinica.senha_pacientes.enitites.Paciente;
 import com.clinica.senha_pacientes.enitites.TipoFila;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -21,9 +22,8 @@ public interface ItemPacienteFilaRepository extends JpaRepository<ItemPacienteFi
             SELECT p FROM ItemPacienteFila p 
             WHERE p.tipoFila = com.clinica.senha_pacientes.enitites.TipoFila.HISTORICO
             ORDER BY p.dataDeAdicao DESC
-            OFFSET 1
             """)
-    List<ItemPacienteFila> getHistorico();
+    List<ItemPacienteFila> getHistorico(Limit limit);
 
     @Query("""
             SELECT p FROM ItemPacienteFila p 
