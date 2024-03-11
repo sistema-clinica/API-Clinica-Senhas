@@ -20,23 +20,22 @@ public class AtendimentoRepository {
     private ItemPacienteFilaRepository itemPacienteFilaRepository;
 
     public Queue<Paciente> getFilaUrgentePaciente() {
-        return new LinkedList<>(itemPacienteFilaRepository.findAllByTipoFilaOrderByDataDeAdicao(TipoFila.URGENTE).stream().map(ItemPacienteFila::getPaciente).toList());
+        return new LinkedList<>(itemPacienteFilaRepository.findPacienteByTipoFilaOrderByDataDeAdicao(TipoFila.URGENTE));
     }
 
     public Queue<Paciente> getFilaNormalPaciente() {
-        return new LinkedList<>(itemPacienteFilaRepository.findAllByTipoFilaOrderByDataDeAdicao(TipoFila.NORMAL).stream().map(ItemPacienteFila::getPaciente).toList());
+        return new LinkedList<>(itemPacienteFilaRepository.findPacienteByTipoFilaOrderByDataDeAdicao(TipoFila.NORMAL));
 
     }
 
     public Queue<Paciente> getFilaPreferencialPaciente() {
-        return new LinkedList<>(itemPacienteFilaRepository.findAllByTipoFilaOrderByDataDeAdicao(TipoFila.PREFERENCIAL).stream().map(ItemPacienteFila::getPaciente).toList());
+        return new LinkedList<>(itemPacienteFilaRepository.findPacienteByTipoFilaOrderByDataDeAdicao(TipoFila.PREFERENCIAL));
 
     }
 
 
     public Queue<Paciente> getFilaEsperaPaciente() {
-        return new LinkedList<>(itemPacienteFilaRepository.findAllByTipoFilaOrderByDataDeAdicao(TipoFila.ESPERA).stream().map(ItemPacienteFila::getPaciente).toList());
-
+        return new LinkedList<>(itemPacienteFilaRepository.findPacienteByTipoFilaOrderByDataDeAdicao(TipoFila.ESPERA));
     }
 
 
@@ -91,6 +90,6 @@ public class AtendimentoRepository {
     }
 
     public boolean isFilaEsperaVazia() {
-        return itemPacienteFilaRepository.findAllByTipoFilaOrderByDataDeAdicao(TipoFila.ESPERA).isEmpty();
+        return itemPacienteFilaRepository.findPacienteByTipoFilaOrderByDataDeAdicao(TipoFila.ESPERA).isEmpty();
     }
 }

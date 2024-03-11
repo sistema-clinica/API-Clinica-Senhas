@@ -21,6 +21,7 @@ public interface ItemPacienteFilaRepository extends JpaRepository<ItemPacienteFi
             SELECT p FROM ItemPacienteFila p 
             WHERE p.tipoFila = com.clinica.senha_pacientes.enitites.TipoFila.HISTORICO
             ORDER BY p.dataDeAdicao DESC
+            OFFSET 1
             """)
     List<ItemPacienteFila> getHistorico();
 
@@ -31,7 +32,13 @@ public interface ItemPacienteFilaRepository extends JpaRepository<ItemPacienteFi
             """)
     ItemPacienteFila getUltimoChamado();
 
-    List<ItemPacienteFila> findAllByTipoFilaOrderByDataDeAdicao(TipoFila tipoFila);
+    @Query("""
+            SELECT p.paciente
+            FROM ItemPacienteFila p
+            WHERE p.tipoFila = :tipoFila
+            ORDER BY p.dataDeAdicao
+            """)
+    List<Paciente> findPacienteByTipoFilaOrderByDataDeAdicao(TipoFila tipoFila);
 
     void deleteByPaciente(Paciente paciente);
 }
