@@ -109,9 +109,12 @@ public class AtendimentoService {
         return repository.getFilaEsperaPaciente();
     }
 
-    public List<Paciente> getHistoricoSenhasChamadas(int numero_limit) {
+    public List<Paciente> getHistoricoSenhasChamadas() {
         List<Paciente> senhasChamadas = repository.getHistoricoSenhasChamadas();
-        return senhasChamadas.stream().limit(numero_limit).toList();
+        if (!senhasChamadas.isEmpty()) {
+            return senhasChamadas.stream().limit(6).toList();
+        }
+        throw new RuntimeException("Não existem pacientes anteriores");
     }
 
     public Paciente getUltimaSenhaChamada() {

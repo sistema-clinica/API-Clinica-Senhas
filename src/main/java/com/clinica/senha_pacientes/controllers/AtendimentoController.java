@@ -101,7 +101,7 @@ public class AtendimentoController {
     @GetMapping("/recentes")
     @Operation(summary = "Listagem dos últimos paciente chamados")
     public ResponseEntity<List<ChamadaDTO>> BuscarPacientesRecentes() {
-        var pacientesRecentes = atendimentoService.getHistoricoSenhasChamadas(5).stream().map(ChamadaDTO::new).toList();
+        var pacientesRecentes = atendimentoService.getHistoricoSenhasChamadas().stream().map(ChamadaDTO::new).toList();
         return ResponseEntity.ok(pacientesRecentes);
     }
 
