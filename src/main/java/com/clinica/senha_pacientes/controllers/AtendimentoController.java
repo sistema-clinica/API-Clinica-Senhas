@@ -33,6 +33,8 @@ public class AtendimentoController {
     private PacienteService pacienteService;
 
     @PostMapping
+    @MessageMapping("/atendimento")
+    @SendTo("/painel")
     @Operation(summary = "Chamar paciente para atendimento",
             description = "Chama o paciente no topo da lista de atendimento e o coloca como status de finalizado atendimento.")
     public ResponseEntity<ChamadaDTO> getPacienteAtendimento(@RequestBody @Valid LocalChamadaDTO localChamadaDTO) {
@@ -45,7 +47,7 @@ public class AtendimentoController {
 
     @PostMapping("/espera")
     @MessageMapping("/espera")
-    @SendTo("/painel/espera")
+    @SendTo("/painel")
     @Operation(summary = "Chamar paciente para triagem",
             description = "Chama o paciente no topo da fila de triagem, é necessário enviar a sala de triagem que ele será atendido")
     public ResponseEntity<ChamadaDTO> getPacienteTriagem(@RequestBody @Valid LocalChamadaDTO localChamadaDTO){
