@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "pacientes")
@@ -38,6 +39,9 @@ public class Paciente {
     private Urgencia urgencia;
 
     private String detalheSintomas;
+
+    @OneToMany(mappedBy = "paciente", cascade = CascadeType.REMOVE)
+    private List<ItemPacienteFila> itensPacienteFila;
 
     public void setTriagem(PacienteTriagemDTO pacienteTriagemDTO) {
         if (this.status == Status.EM_TRIAGEM) {
